@@ -25,6 +25,32 @@ docker-compose exec haproxy /reload.sh
 ```
 
 ```
+# haproxy.cfg
+# ...
+frontend ftd
+    bind 0.0.0.0:3000
+    mode tcp
+    option tcplog
+    maxconn 20000
+    timeout client 6h0m0s
+    default_backend bkd
+
+backend bkd
+    mode tcp
+    balance roundrobin
+    option httpchk GET /
+    http-check expect status 200
+    timeout check 10000ms
+    timeout server 21600000ms
+    timeout tunnel 21600000ms
+    timeout connect 5000ms
+
+    default-server inter 5000ms fall 3 on-marked-down shutdown-sessions
+        server srv_0 nginx200:80  check port 80
+        server srv_1 nginx503:80  check port 80
+```
+
+```
 $> while true; do date && curl http://127.0.0.1:3000 && sleep 1 && echo ""; done
 Ven 23 oct 2020 13:29:33 CEST
 200 OK
