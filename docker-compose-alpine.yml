@@ -1,0 +1,23 @@
+version: '3'
+services:
+  haproxy:
+    image: haproxy:2.1.9-alpine
+    volumes: ['./haproxy/haproxy-alpine.cfg:/usr/local/etc/haproxy/haproxy.cfg']
+    ports: ['3001:3000']
+    networks:
+      - net
+  nginx200:
+    image: nginx:latest
+    volumes: ['./nginx200.conf:/etc/nginx/conf.d/default.conf']
+    networks:
+      - net
+  nginx503:
+    image: nginx:latest
+    volumes: ['./nginx503.conf:/etc/nginx/conf.d/default.conf']
+    networks:
+      - net
+networks:
+  net:
+    ipam:
+      config:
+      - {subnet: 192.168.241.0/24}
